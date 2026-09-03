@@ -1,5 +1,4 @@
-import { NgIf } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatChip } from '@angular/material/chips';
 import { MatButton } from '@angular/material/button';
@@ -9,23 +8,15 @@ import { AppAuthService } from '../../services/app.auth.service';
     selector: 'app-login',
     templateUrl: './app-login.html',
     styleUrls: ['./app-login.scss'],
-    imports: [MatIcon, NgIf, MatChip,MatButton]
+    imports: [MatIcon, MatChip, MatButton]
 })
-export class AppLogin implements OnInit {
+export class AppLogin {
 
   private authService = inject(AppAuthService)
 
-  public username = ''
-  public useralias = ''
-
-  ngOnInit(): void {
-    this.authService.usernameObservable.subscribe(name => {
-      this.username = name;
-    });
-    this.authService.useraliasObservable.subscribe(alias => {
-      this.useralias = alias;
-    });
-  }
+  public readonly username = this.authService.username;
+  public readonly useralias = this.authService.useralias;
+  public readonly isAuthenticated = this.authService.authenticated;
 
   public login () {
     this.authService.login()
@@ -34,9 +25,4 @@ export class AppLogin implements OnInit {
   public logout () {
     this.authService.logout()
   }
-
-  public isAuthenticated () : boolean {
-    return this.authService.isAuthenticated()
-  }
-
 }

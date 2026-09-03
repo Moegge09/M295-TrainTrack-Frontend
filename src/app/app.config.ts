@@ -40,8 +40,8 @@ export const appConfig: ApplicationConfig = {
             allowedUrls: [environment.backendBaseUrl], 
         } 
     }),
-    provideEnvironmentInitializer(() => {
-        inject(AppAuthService).initAuth().finally()}
-    )  
+    provideEnvironmentInitializer(() =>
+        inject(AppAuthService).initAuth()
+    )
   ]
 };

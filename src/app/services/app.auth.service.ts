@@ -1,7 +1,7 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, signal} from '@angular/core';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {AuthConfig, OAuthErrorEvent, OAuthService} from 'angular-oauth2-oidc';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +10,15 @@ export class AppAuthService {
   private oauthService = inject(OAuthService);
   private authConfig = inject(AuthConfig);
   private jwtHelper: JwtHelperService = new JwtHelperService();
-  private usernameSubject: BehaviorSubject<string> = new BehaviorSubject('');
-  public readonly usernameObservable: Observable<string> = this.usernameSubject.asObservable();
-  private useraliasSubject: BehaviorSubject<string> = new BehaviorSubject('');
-  public readonly useraliasObservable: Observable<string> = this.useraliasSubject.asObservable();
-  private accessTokenSubject: BehaviorSubject<string> = new BehaviorSubject('');
-  public readonly accessTokenObservable: Observable<string> = this.accessTokenSubject.asObservable();
+
+  private readonly usernameSignal = signal('');
+  public readonly username = this.usernameSignal.asReadonly();
+
+  private readonly useraliasSignal = signal('');
+  public readonly useralias = this.useraliasSignal.asReadonly();
+
+  private readonly authenticatedSignal = signal(false);
+  public readonly authenticated = this.authenticatedSignal.asReadonly();
 
   constructor(
   ) {
@@ -38,16 +41,11 @@ export class AppAuthService {
     this.oauthService.configure(this.authConfig);
     this.oauthService.events
       .subscribe(e => this.handleEvents(e));
-    // erst warten bis das Discovery-Document geladen und ein evtl. Login-Redirect
-    // verarbeitet ist, danach den Silent Refresh aufsetzen
     await this.oauthService.loadDiscoveryDocumentAndTryLogin();
     this.oauthService.setupAutomaticSilentRefresh();
   }
 
   public getRoles(): Observable<Array<string>> {
-    // Client-ID kommt aus der AuthConfig, damit sie nicht doppelt gepflegt werden muss.
-    // Muss mit app.name im Backend uebereinstimmen (application.yaml),
-    // weil der AuthenticationRoleConverter dort resource_access[app.name].roles liest.
     const clientId = this.authConfig.clientId ?? '';
     const roles = this._decodedAccessToken?.resource_access?.[clientId]?.roles;
 
@@ -69,8 +67,9 @@ export class AppAuthService {
 
   public logout() {
     this.oauthService.logOut();
-    this.useraliasSubject.next('');
-    this.usernameSubject.next('');
+    this.useraliasSignal.set('');
+    this.usernameSignal.set('');
+    this.authenticatedSignal.set(false);
   }
 
   public login() {
@@ -80,22 +79,22 @@ export class AppAuthService {
   private handleEvents(event: any) {
     if (event instanceof OAuthErrorEvent) {
       // console.error(event);
-    } else {
-      this._accessToken = this.oauthService.getAccessToken();
-      this.accessTokenSubject.next(this._accessToken);
-      this._decodedAccessToken = this.jwtHelper.decodeToken(this._accessToken);
+      return;
+    }
 
-      if (this._decodedAccessToken?.family_name && this._decodedAccessToken?.given_name) {
-        const username = this._decodedAccessToken?.given_name + ' ' + this._decodedAccessToken?.family_name;
-        this.usernameSubject.next(username);
-      }
+    this._accessToken = this.oauthService.getAccessToken();
+    this._decodedAccessToken = this.jwtHelper.decodeToken(this._accessToken);
+    this.authenticatedSignal.set(this.oauthService.hasValidAccessToken());
 
-      const claims = this.getIdentityClaims();
-      if (claims !== null) {
-        if (claims['preferred_username'] !== '') {
-          this.useraliasSubject.next(claims['preferred_username']);
-        }
-      }
+    if (this._decodedAccessToken?.family_name && this._decodedAccessToken?.given_name) {
+      this.usernameSignal.set(
+        this._decodedAccessToken.given_name + ' ' + this._decodedAccessToken.family_name
+      );
+    }
+
+    const claims = this.getIdentityClaims();
+    if (claims?.['preferred_username']) {
+      this.useraliasSignal.set(claims['preferred_username']);
     }
   }
 }
