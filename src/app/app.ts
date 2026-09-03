@@ -1,21 +1,22 @@
 import { Component, signal } from '@angular/core';
-// RouterLink und IsInRolesDirective wieder in imports aufnehmen,
-// sobald die Navigations-Buttons im Template aktiv sind.
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AppRoles } from './app.roles';
 import { AppLogin } from './components/app-login/app-login';
+import { IsInRolesDirective } from './directives/app-is-in-roles.dir';
 
 @Component({
   selector: 'app-root',
   imports: [
     RouterOutlet,
+    RouterLink,
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
     AppLogin,
+    IsInRolesDirective,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss'

@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, inject, provideBrowserGlobalErrorListeners, provideEnvironmentInitializer } from "@angular/core";
+import { ApplicationConfig, importProvidersFrom, inject, provideBrowserGlobalErrorListeners, provideAppInitializer } from "@angular/core";
 import { AppAuthService } from "./services/app.auth.service";
 import { environment } from "../environments/environment";
 import { AuthConfig, OAuthStorage, provideOAuthClient } from "angular-oauth2-oidc";
@@ -40,7 +40,12 @@ export const appConfig: ApplicationConfig = {
             allowedUrls: [environment.backendBaseUrl], 
         } 
     }),
-    provideEnvironmentInitializer(() =>
+    // provideAppInitializer, NICHT provideEnvironmentInitializer: nur dieser
+    // wartet auf das zurueckgegebene Promise. Der Router startet seine erste
+    // Navigation erst danach. Sonst leitet der Guard bereits um, bevor
+    // tryLogin() den ?code=... aus der URL lesen konnte - und mit der
+    // Umleitung ist der Code aus der URL verschwunden.
+    provideAppInitializer(() =>
         inject(AppAuthService).initAuth()
     )
   ]

@@ -1,23 +1,54 @@
 import { TestBed } from '@angular/core/testing';
+import { AuthConfig, OAuthModule } from 'angular-oauth2-oidc';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { App } from './app';
+import { authConfig } from './app.auth';
 
 describe('App', () => {
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      // App bindet ueber IsInRolesDirective den AppAuthService ein, der wiederum
+      // den OAuthService braucht. Ohne OAuthModule.forRoot() scheitert der Test
+      // schon beim Erzeugen der Komponente (NG0201).
+      imports: [
+        App,
+        OAuthModule.forRoot({ resourceServer: { sendAccessToken: true } })
+      ],
+      providers: [
+        { provide: AuthConfig, useValue: authConfig }
+      ],
     }).compileComponents();
   });
 
-  it('should create the app', () => {
+  it('sollte die App erstellen', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('sollte die Toolbar rendern', () => {
     const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
+    fixture.detectChanges();
+
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, M295-TrainTrack-Frontend');
+    expect(compiled.querySelector('mat-toolbar')).toBeTruthy();
+  });
+
+  it('sollte ohne Anmeldung den Login-Button zeigen', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('Login');
+    expect(compiled.textContent).not.toContain('Logout');
+  });
+
+  it('sollte ohne Rolle read den Navigationspunkt Uebungen ausblenden', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // *appIsInRoles blendet den Button aus, solange keine Rollen im Token stehen
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).not.toContain('Uebungen');
   });
 });
