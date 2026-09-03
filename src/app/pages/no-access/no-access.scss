@@ -1,0 +1,12 @@
+.wrapper {
+  padding: 40px;
+}
+
+mat-card-content {
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}

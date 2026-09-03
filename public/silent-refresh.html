@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Silent Refresh</title>
+</head>
+<body>
+  <!--
+    Wird von angular-oauth2-oidc fuer den Silent Refresh in einem versteckten
+    iframe geladen. Gibt den Hash mit dem neuen Token an das Hauptfenster zurueck.
+    Registriert in src/app/app.auth.ts als silentRefreshRedirectUri.
+  -->
+  <script>
+    parent.postMessage(location.hash, location.origin);
+  </script>
+</body>
+</html>

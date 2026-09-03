@@ -1,0 +1,14 @@
+<div *ngIf="isAuthenticated()">
+  <mat-chip>{{username}}</mat-chip>
+  <button (click)="logout()" color="warn" mat-button>
+    <mat-icon>logout</mat-icon>
+    Logout
+  </button>
+</div>
+
+<div *ngIf="!isAuthenticated()">
+  <button (click)="login()" color="warn" mat-button>
+    <mat-icon>login</mat-icon>
+    Login
+  </button>
+</div>
