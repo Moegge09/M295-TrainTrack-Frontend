@@ -1,0 +1,60 @@
+<main class="wrapper">
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ title() }}</mat-card-title>
+    </mat-card-header>
+
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <mat-card-content>
+
+      @if (error()) {
+        <p class="error">
+          <mat-icon color="warn">error_outline</mat-icon>
+          {{ error() }}
+        </p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="fields">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" maxlength="255" placeholder="z.B. Woche A">
+
+          @if (form.controls.name.hasError('required')) {
+            <mat-error>Name ist ein Pflichtfeld.</mat-error>
+          } @else if (form.controls.name.hasError('maxlength')) {
+            <mat-error>Der Name darf höchstens 255 Zeichen lang sein.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Trainings</mat-label>
+          <mat-select formControlName="trainingIds" multiple>
+            @for (training of trainings(); track training.id) {
+              <mat-option [value]="training.id">{{ trainingLabel(training) }}</mat-option>
+            }
+          </mat-select>
+          <mat-hint>Mehrfachauswahl möglich</mat-hint>
+        </mat-form-field>
+
+      </form>
+
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="cancel()" [disabled]="saving()">
+        Abbrechen
+      </button>
+      <button mat-flat-button type="button" (click)="save()" [disabled]="saving() || loading()">
+        <mat-icon>save</mat-icon>
+        Speichern
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+
+</main>

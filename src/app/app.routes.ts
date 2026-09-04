@@ -6,6 +6,8 @@ import { GymList } from "./pages/gym-list/gym-list";
 import { GymForm } from "./pages/gym-form/gym-form";
 import { TrainingList } from "./pages/training-list/training-list";
 import { TrainingForm } from "./pages/training-form/training-form";
+import { PlanList } from "./pages/plan-list/plan-list";
+import { PlanForm } from "./pages/plan-form/plan-form";
 import { AppRoles } from "./app.roles";
 import { appCanActivate } from "./guard/app.auth.guard";
 
@@ -95,7 +97,35 @@ export const routes: Routes = [
       pagetitle: 'Training bearbeiten'
     }
   },
-  // TODO: gleiches Muster für plan
+  {
+    path: 'plan',
+    component: PlanList,
+    canActivate: [appCanActivate],
+    data: {
+      roles: [AppRoles.Read],
+      pagetitle: 'Alle Pläne'
+    }
+  },
+  {
+    // MUSS vor 'plan/:id' stehen
+    path: 'plan/new',
+    component: PlanForm,
+    canActivate: [appCanActivate],
+    data: {
+      // Pläne schreiben verlangt im Backend die Rolle admin
+      roles: [AppRoles.Admin],
+      pagetitle: 'Neuer Plan'
+    }
+  },
+  {
+    path: 'plan/:id',
+    component: PlanForm,
+    canActivate: [appCanActivate],
+    data: {
+      roles: [AppRoles.Admin],
+      pagetitle: 'Plan bearbeiten'
+    }
+  },
   {
     path: '',
     redirectTo: 'exercise',

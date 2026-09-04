@@ -21,6 +21,13 @@
     <span>Trainings</span>
   </button>
 
+  <button mat-button
+    [routerLink]="['plan']"
+    *appIsInRoles="[roles.Read]">
+    <mat-icon>event_note</mat-icon>
+    <span>Pläne</span>
+  </button>
+
   <span class="spacer"></span>
 
   <app-login></app-login>

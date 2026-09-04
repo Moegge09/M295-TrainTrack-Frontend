@@ -1,0 +1,16 @@
+.wrapper {
+  padding: 1.5rem;
+  max-width: 34rem;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  padding-top: 0.5rem;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
