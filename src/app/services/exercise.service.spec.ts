@@ -13,7 +13,7 @@ describe('ExerciseService', () => {
 
   const baseUrl = environment.backendBaseUrl + 'exercise';
 
-  const bankdruecken: Exercise = { id: 1, name: 'Bankdruecken', weight: 60 };
+  const benchPress: Exercise = { id: 1, name: 'Bankdrücken', weight: 60 };
   const kniebeuge: Exercise = { id: 2, name: 'Kniebeuge', weight: 80 };
 
   beforeEach(() => {
@@ -39,15 +39,15 @@ describe('ExerciseService', () => {
 
   describe('getAll', () => {
 
-    it('sollte alle Uebungen laden', () => {
+    it('sollte alle Übungen laden', () => {
       let result: Exercise[] | undefined;
       service.getAll().subscribe(data => result = data);
 
       const req = httpMock.expectOne(baseUrl);
       expect(req.request.method).toBe('GET');
-      req.flush([bankdruecken, kniebeuge]);
+      req.flush([benchPress, kniebeuge]);
 
-      expect(result).toEqual([bankdruecken, kniebeuge]);
+      expect(result).toEqual([benchPress, kniebeuge]);
       expect(result?.length).toBe(2);
     });
 
@@ -63,18 +63,18 @@ describe('ExerciseService', () => {
 
   describe('getOne', () => {
 
-    it('sollte eine einzelne Uebung anhand der ID laden', () => {
+    it('sollte eine einzelne Übung anhand der ID laden', () => {
       let result: Exercise | undefined;
       service.getOne(1).subscribe(data => result = data);
 
       const req = httpMock.expectOne(`${baseUrl}/1`);
       expect(req.request.method).toBe('GET');
-      req.flush(bankdruecken);
+      req.flush(benchPress);
 
-      expect(result).toEqual(bankdruecken);
+      expect(result).toEqual(benchPress);
     });
 
-    it('sollte einen 404 durchreichen, wenn es die Uebung nicht gibt', () => {
+    it('sollte einen 404 durchreichen, wenn es die Übung nicht gibt', () => {
       let status: number | undefined;
       service.getOne(999).subscribe({
         error: err => status = err.status
@@ -89,7 +89,7 @@ describe('ExerciseService', () => {
 
   describe('create', () => {
 
-    it('sollte eine neue Uebung per POST anlegen', () => {
+    it('sollte eine neue Übung per POST anlegen', () => {
       const neu: Exercise = { name: 'Klimmzug', weight: 0 };
       let result: Exercise | undefined;
 
@@ -107,16 +107,16 @@ describe('ExerciseService', () => {
 
   describe('update', () => {
 
-    it('sollte eine bestehende Uebung per PUT aktualisieren', () => {
-      const geaendert: Exercise = { id: 1, name: 'Bankdruecken', weight: 65 };
+    it('sollte eine bestehende Übung per PUT aktualisieren', () => {
+      const aktualisiert: Exercise = { id: 1, name: 'Bankdrücken', weight: 65 };
       let result: Exercise | undefined;
 
-      service.update(1, geaendert).subscribe(data => result = data);
+      service.update(1, aktualisiert).subscribe(data => result = data);
 
       const req = httpMock.expectOne(`${baseUrl}/1`);
       expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual(geaendert);
-      req.flush(geaendert);
+      expect(req.request.body).toEqual(aktualisiert);
+      req.flush(aktualisiert);
 
       expect(result?.weight).toBe(65);
     });
@@ -124,7 +124,7 @@ describe('ExerciseService', () => {
 
   describe('remove', () => {
 
-    it('sollte eine Uebung per DELETE loeschen', () => {
+    it('sollte eine Übung per DELETE löschen', () => {
       let message: string | undefined;
 
       service.remove(1).subscribe(data => message = data.message);

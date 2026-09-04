@@ -8,7 +8,7 @@ describe('App', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      // App bindet ueber IsInRolesDirective den AppAuthService ein, der wiederum
+      // App bindet über IsInRolesDirective den AppAuthService ein, der wiederum
       // den OAuthService braucht. Ohne OAuthModule.forRoot() scheitert der Test
       // schon beim Erzeugen der Komponente (NG0201).
       imports: [
@@ -43,12 +43,12 @@ describe('App', () => {
     expect(compiled.textContent).not.toContain('Logout');
   });
 
-  it('sollte ohne Rolle read den Navigationspunkt Uebungen ausblenden', () => {
+  it('sollte ohne Rolle read den Navigationspunkt Übungen ausblenden', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
     // *appIsInRoles blendet den Button aus, solange keine Rollen im Token stehen
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).not.toContain('Uebungen');
+    expect(compiled.textContent).not.toContain('Übungen');
   });
 });

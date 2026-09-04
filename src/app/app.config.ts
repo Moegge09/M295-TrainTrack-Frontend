@@ -41,7 +41,7 @@ export const appConfig: ApplicationConfig = {
         } 
     }),
     // provideAppInitializer, NICHT provideEnvironmentInitializer: nur dieser
-    // wartet auf das zurueckgegebene Promise. Der Router startet seine erste
+    // wartet auf das zurückgegebene Promise. Der Router startet seine erste
     // Navigation erst danach. Sonst leitet der Guard bereits um, bevor
     // tryLogin() den ?code=... aus der URL lesen konnte - und mit der
     // Umleitung ist der Code aus der URL verschwunden.

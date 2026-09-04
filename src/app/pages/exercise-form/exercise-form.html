@@ -1,0 +1,62 @@
+<main class="wrapper">
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ title() }}</mat-card-title>
+    </mat-card-header>
+
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <mat-card-content>
+
+      @if (error()) {
+        <p class="error">
+          <mat-icon color="warn">error_outline</mat-icon>
+          {{ error() }}
+        </p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="fields">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" maxlength="255" placeholder="z.B. Bankdrücken">
+
+          @if (form.controls.name.hasError('required')) {
+            <mat-error>Name ist ein Pflichtfeld.</mat-error>
+          } @else if (form.controls.name.hasError('maxlength')) {
+            <mat-error>Der Name darf höchstens 255 Zeichen lang sein.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Gewicht</mat-label>
+          <input matInput type="number" formControlName="weight" step="0.5" min="0">
+          <span matTextSuffix>kg</span>
+
+          @if (form.controls.weight.hasError('required')) {
+            <mat-error>Gewicht ist ein Pflichtfeld.</mat-error>
+          } @else if (form.controls.weight.hasError('min')) {
+            <mat-error>Das Gewicht darf nicht negativ sein.</mat-error>
+          }
+        </mat-form-field>
+
+      </form>
+
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="cancel()" [disabled]="saving()">
+        Abbrechen
+      </button>
+      <button mat-flat-button type="button" (click)="save()" [disabled]="saving() || loading()">
+        <mat-icon>save</mat-icon>
+        Speichern
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+
+</main>
