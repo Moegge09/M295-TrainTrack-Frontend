@@ -52,7 +52,11 @@
 
           <mat-form-field appearance="outline" class="plz">
             <mat-label>PLZ</mat-label>
-            <input matInput formControlName="plz">
+            <input matInput formControlName="plz" maxlength="10">
+
+            @if (form.controls.address.controls.plz.hasError('pattern')) {
+              <mat-error>3 bis 10 Zeichen, nur Ziffern, Buchstaben, Leerzeichen und Bindestrich.</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="country">

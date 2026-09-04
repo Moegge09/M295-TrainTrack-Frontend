@@ -38,7 +38,9 @@ export class GymForm implements OnInit {
     address: this.fb.nonNullable.group({
       street: [''],
       houseNumber: [''],
-      plz: [''],
+      // Typprüfung: international gültige Postleitzahl - 3 bis 10 Zeichen aus
+      // Ziffern, Buchstaben, Leerzeichen und Bindestrich (8001, SW1A 1AA, K1A 0B1)
+      plz: ['', [Validators.pattern(/^[A-Za-z0-9][A-Za-z0-9 -]{2,9}$/)]],
       city: [''],
       country: [''],
     }),

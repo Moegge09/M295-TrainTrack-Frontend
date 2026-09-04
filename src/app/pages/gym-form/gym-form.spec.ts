@@ -79,6 +79,36 @@ describe('GymForm', () => {
       expect(component.form.valid).toBe(true);
     });
 
+    it('sollte unzulässige Zeichen und zu kurze Postleitzahlen ablehnen', () => {
+      const plz = component.form.controls.address.controls.plz;
+
+      plz.setValue('80');
+      expect(plz.hasError('pattern')).toBe(true);
+
+      plz.setValue('8001!');
+      expect(plz.hasError('pattern')).toBe(true);
+
+      plz.setValue(' 8001');
+      expect(plz.hasError('pattern')).toBe(true);
+    });
+
+    it('sollte Postleitzahlen verschiedener Länder zulassen', () => {
+      const plz = component.form.controls.address.controls.plz;
+
+      for (const wert of ['8001', '10115', 'SW1A 1AA', 'K1A 0B1', '1234 AB']) {
+        plz.setValue(wert);
+        expect(plz.valid).toBe(true);
+      }
+    });
+
+    it('sollte eine leere PLZ zulassen, weil das Feld optional ist', () => {
+      const plz = component.form.controls.address.controls.plz;
+
+      plz.setValue('');
+
+      expect(plz.valid).toBe(true);
+    });
+
     it('sollte einen Namen über 255 Zeichen ablehnen', () => {
       component.form.controls.name.setValue('x'.repeat(256));
 
