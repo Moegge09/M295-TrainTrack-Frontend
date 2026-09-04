@@ -9,7 +9,7 @@ import { AppAuthService } from '../services/app.auth.service';
 export class IsInRolesDirective implements OnInit, OnDestroy {
 
   private viewContainerRef = inject(ViewContainerRef);
-  private templateRef = inject<TemplateRef<any>>(TemplateRef);
+  private templateRef = inject<TemplateRef<unknown>>(TemplateRef);
   private authService = inject(AppAuthService);
 
   @Input() appIsInRoles?: string[];

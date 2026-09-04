@@ -1,7 +1,14 @@
 import {inject, Injectable, signal} from '@angular/core';
 import {JwtHelperService} from '@auth0/angular-jwt';
-import {AuthConfig, OAuthErrorEvent, OAuthService} from 'angular-oauth2-oidc';
+import {AuthConfig, OAuthErrorEvent, OAuthEvent, OAuthService} from 'angular-oauth2-oidc';
 import {Observable, of} from 'rxjs';
+
+/** Die Claims aus dem Keycloak-Access-Token, die wir tatsächlich lesen. */
+export interface AccessTokenClaims {
+  given_name?: string;
+  family_name?: string;
+  resource_access?: Record<string, { roles?: string[] }>;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -25,9 +32,9 @@ export class AppAuthService {
     this.handleEvents(null);
   }
 
-  private _decodedAccessToken: any;
+  private _decodedAccessToken: AccessTokenClaims | null = null;
 
-  get decodedAccessToken() {
+  get decodedAccessToken(): AccessTokenClaims | null {
     return this._decodedAccessToken;
   }
 
@@ -45,7 +52,7 @@ export class AppAuthService {
     this.oauthService.setupAutomaticSilentRefresh();
   }
 
-  public getRoles(): Observable<Array<string>> {
+  public getRoles(): Observable<string[]> {
     const clientId = this.authConfig.clientId ?? '';
     const roles = this._decodedAccessToken?.resource_access?.[clientId]?.roles;
 
@@ -57,7 +64,7 @@ export class AppAuthService {
     return of(roleArray.map(r => r.replace('ROLE_', '')));
   }
 
-  public getIdentityClaims(): Record<string, any> {
+  public getIdentityClaims(): Record<string, unknown> {
     return this.oauthService.getIdentityClaims();
   }
 
@@ -76,7 +83,7 @@ export class AppAuthService {
     this.oauthService.initLoginFlow();
   }
 
-  private handleEvents(event: any) {
+  private handleEvents(event: OAuthEvent | null) {
     if (event instanceof OAuthErrorEvent) {
       // console.error(event);
       return;
@@ -92,9 +99,9 @@ export class AppAuthService {
       );
     }
 
-    const claims = this.getIdentityClaims();
-    if (claims?.['preferred_username']) {
-      this.useraliasSignal.set(claims['preferred_username']);
+    const alias = this.getIdentityClaims()?.['preferred_username'];
+    if (typeof alias === 'string' && alias !== '') {
+      this.useraliasSignal.set(alias);
     }
   }
 }
