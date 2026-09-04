@@ -40,11 +40,7 @@ export const appConfig: ApplicationConfig = {
             allowedUrls: [environment.backendBaseUrl], 
         } 
     }),
-    // provideAppInitializer, NICHT provideEnvironmentInitializer: nur dieser
-    // wartet auf das zurückgegebene Promise. Der Router startet seine erste
-    // Navigation erst danach. Sonst leitet der Guard bereits um, bevor
-    // tryLogin() den ?code=... aus der URL lesen konnte - und mit der
-    // Umleitung ist der Code aus der URL verschwunden.
+    // provideAppInitializer wartet auf das Promise, provideEnvironmentInitializer nicht.
     provideAppInitializer(() =>
         inject(AppAuthService).initAuth()
     )

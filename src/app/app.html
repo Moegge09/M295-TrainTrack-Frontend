@@ -7,6 +7,13 @@
     <span>Übungen</span>
   </button>
 
+  <button mat-button
+    [routerLink]="['gym']"
+    *appIsInRoles="[roles.Read]">
+    <mat-icon>location_on</mat-icon>
+    <span>Gyms</span>
+  </button>
+
   <span class="spacer"></span>
 
   <app-login></app-login>

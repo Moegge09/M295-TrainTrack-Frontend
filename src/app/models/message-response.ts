@@ -1,7 +1,4 @@
-/**
- * Entspricht dem Backend
- * das Backend antwortet damit auf DELETE.
- */
+/** Antwort des Backends auf DELETE. */
 export interface MessageResponse {
   message: string;
 }

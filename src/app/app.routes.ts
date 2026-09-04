@@ -2,6 +2,8 @@ import { Routes } from "@angular/router";
 import { NoAccess } from "./pages/no-access/no-access";
 import { ExerciseList } from "./pages/exercise-list/exercise-list";
 import { ExerciseForm } from "./pages/exercise-form/exercise-form";
+import { GymList } from "./pages/gym-list/gym-list";
+import { GymForm } from "./pages/gym-form/gym-form";
 import { AppRoles } from "./app.roles";
 import { appCanActivate } from "./guard/app.auth.guard";
 
@@ -34,7 +36,36 @@ export const routes: Routes = [
       pagetitle: 'Übung bearbeiten'
     }
   },
-  // TODO: gleiches Muster für gym, training und plan
+  {
+    path: 'gym',
+    component: GymList,
+    canActivate: [appCanActivate],
+    data: {
+      roles: [AppRoles.Read],
+      pagetitle: 'Alle Gyms'
+    }
+  },
+  {
+    // MUSS vor 'gym/:id' stehen
+    path: 'gym/new',
+    component: GymForm,
+    canActivate: [appCanActivate],
+    data: {
+      // Gyms schreiben verlangt im Backend die Rolle admin, nicht update
+      roles: [AppRoles.Admin],
+      pagetitle: 'Neues Gym'
+    }
+  },
+  {
+    path: 'gym/:id',
+    component: GymForm,
+    canActivate: [appCanActivate],
+    data: {
+      roles: [AppRoles.Admin],
+      pagetitle: 'Gym bearbeiten'
+    }
+  },
+  // TODO: gleiches Muster für training und plan
   {
     path: '',
     redirectTo: 'exercise',

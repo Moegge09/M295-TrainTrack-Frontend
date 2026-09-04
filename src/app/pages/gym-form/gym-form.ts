@@ -8,13 +8,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Exercise } from '../../models/exercise';
-import { ExerciseService } from '../../services/exercise.service';
+import { Gym } from '../../models/gym';
+import { GymService } from '../../services/gym.service';
 
 @Component({
-  selector: 'app-exercise-form',
-  templateUrl: './exercise-form.html',
-  styleUrls: ['./exercise-form.scss'],
+  selector: 'app-gym-form',
+  templateUrl: './gym-form.html',
+  styleUrls: ['./gym-form.scss'],
   imports: [
     ReactiveFormsModule,
     MatCardModule,
@@ -25,16 +25,23 @@ import { ExerciseService } from '../../services/exercise.service';
     MatProgressBarModule,
   ],
 })
-export class ExerciseForm implements OnInit {
+export class GymForm implements OnInit {
 
   private fb = inject(FormBuilder);
-  private exerciseService = inject(ExerciseService);
+  private gymService = inject(GymService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  /** Adresse als verschachtelte Gruppe. Pflichtfeld ist nur der Name. */
   public readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.maxLength(255)]],
-    weight: [0, [Validators.required, Validators.min(0)]],
+    address: this.fb.nonNullable.group({
+      street: [''],
+      houseNumber: [''],
+      plz: [''],
+      city: [''],
+      country: [''],
+    }),
   });
 
   public readonly id = signal<number | null>(null);
@@ -43,25 +50,33 @@ export class ExerciseForm implements OnInit {
   public readonly error = signal('');
 
   public readonly isEdit = computed(() => this.id() !== null);
-  public readonly title = computed(() => this.isEdit() ? 'Übung bearbeiten' : 'Neue Übung');
+  public readonly title = computed(() => this.isEdit() ? 'Gym bearbeiten' : 'Neues Gym');
 
   ngOnInit(): void {
     const param = this.route.snapshot.paramMap.get('id');
 
     if (param !== null) {
       this.id.set(Number(param));
-      this.loadExercise(Number(param));
+      this.loadGym(Number(param));
     }
   }
 
-  /** Lädt die Übung ins Formular. */
-  public loadExercise(id: number): void {
+  public loadGym(id: number): void {
     this.loading.set(true);
     this.error.set('');
 
-    this.exerciseService.getOne(id).subscribe({
-      next: exercise => {
-        this.form.patchValue({ name: exercise.name, weight: exercise.weight });
+    this.gymService.getOne(id).subscribe({
+      next: gym => {
+        this.form.patchValue({
+          name: gym.name,
+          address: {
+            street: gym.address?.street ?? '',
+            houseNumber: gym.address?.houseNumber ?? '',
+            plz: gym.address?.plz ?? '',
+            city: gym.address?.city ?? '',
+            country: gym.address?.country ?? '',
+          }
+        });
         this.loading.set(false);
       },
       error: (err: HttpErrorResponse) => {
@@ -71,10 +86,8 @@ export class ExerciseForm implements OnInit {
     });
   }
 
-  /** Legt an oder aktualisiert. */
   public save(): void {
     if (this.form.invalid) {
-      // erst dann zeigt Material die mat-error an
       this.form.markAllAsTouched();
       return;
     }
@@ -82,12 +95,12 @@ export class ExerciseForm implements OnInit {
     this.saving.set(true);
     this.error.set('');
 
-    const exercise: Exercise = this.form.getRawValue();
+    const gym: Gym = this.form.getRawValue();
     const id = this.id();
 
     const request = id === null
-      ? this.exerciseService.create(exercise)
-      : this.exerciseService.update(id, exercise);
+      ? this.gymService.create(gym)
+      : this.gymService.update(id, gym);
 
     request.subscribe({
       next: () => {
@@ -101,12 +114,10 @@ export class ExerciseForm implements OnInit {
     });
   }
 
-  /** Zurück zur Liste. */
   public cancel(): void {
-    this.router.navigate(['exercise']);
+    this.router.navigate(['gym']);
   }
 
-  /** Übersetzt die Statuscodes des Backends in eine lesbare Meldung. */
   public toMessage(err: HttpErrorResponse): string {
     switch (err.status) {
       case 0:
@@ -116,9 +127,9 @@ export class ExerciseForm implements OnInit {
       case 401:
         return 'Nicht angemeldet (401). Der Access Token wurde nicht mitgeschickt oder ist abgelaufen.';
       case 403:
-        return 'Abgelehnt (403). Entweder fehlt die Rolle "update", oder der XSRF-Token wurde nicht mitgeschickt.';
+        return 'Abgelehnt (403). Entweder fehlt die Rolle "admin", oder der XSRF-Token wurde nicht mitgeschickt.';
       case 404:
-        return 'Diese Übung gibt es nicht (404).';
+        return 'Dieses Gym gibt es nicht (404).';
       default:
         return `Fehler ${err.status}: ${err.message}`;
     }

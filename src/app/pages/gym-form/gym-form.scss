@@ -1,0 +1,41 @@
+.wrapper {
+  padding: 1.5rem;
+  max-width: 40rem;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  padding-top: 0.5rem;
+}
+
+h3 {
+  margin: 0.5rem 0 1rem;
+  font: var(--mat-sys-title-small);
+}
+
+.address {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 1rem;
+}
+
+.address .street  { grid-column: span 3; }
+.address .number  { grid-column: span 1; }
+.address .plz     { grid-column: span 1; }
+.address .city    { grid-column: span 3; }
+.address .country { grid-column: span 4; }
+
+@media (max-width: 30rem) {
+  .address {
+    grid-template-columns: 1fr;
+  }
+
+  .address .street,
+  .address .number,
+  .address .plz,
+  .address .city,
+  .address .country {
+    grid-column: span 1;
+  }
+}

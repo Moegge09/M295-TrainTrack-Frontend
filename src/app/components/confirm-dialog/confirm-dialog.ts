@@ -9,13 +9,7 @@ export interface ConfirmDialogData {
   confirmLabel: string;
 }
 
-/**
- * Basiskomponente: wiederverwendbare Rückfrage vor einer nicht umkehrbaren
- * Aktion. Liegt bewusst in components/ und nicht in pages/, weil sie über
- * keine Route erreichbar ist, sondern von anderen Komponenten geöffnet wird.
- *
- * Der Dialog schliesst mit true (bestätigt) oder false/undefined (abgebrochen).
- */
+/** Rückfrage vor einer nicht umkehrbaren Aktion. Schliesst mit true oder false. */
 @Component({
   selector: 'app-confirm-dialog',
   templateUrl: './confirm-dialog.html',

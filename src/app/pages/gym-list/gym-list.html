@@ -2,7 +2,7 @@
 
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Übungen</mat-card-title>
+      <mat-card-title>Gyms</mat-card-title>
     </mat-card-header>
 
     @if (loading()) {
@@ -18,41 +18,41 @@
           {{ error() }}
         </p>
 
-      } @else if (exercises().length === 0 && !loading()) {
+      } @else if (gyms().length === 0 && !loading()) {
 
-        <p>Noch keine Übungen erfasst.</p>
+        <p>Noch keine Gyms erfasst.</p>
 
       } @else {
 
-        <table mat-table [dataSource]="exercises()">
+        <table mat-table [dataSource]="gyms()">
 
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef>ID</th>
-            <td mat-cell *matCellDef="let exercise">{{ exercise.id }}</td>
+            <td mat-cell *matCellDef="let gym">{{ gym.id }}</td>
           </ng-container>
 
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let exercise">{{ exercise.name }}</td>
+            <td mat-cell *matCellDef="let gym">{{ gym.name }}</td>
           </ng-container>
 
-          <ng-container matColumnDef="weight">
-            <th mat-header-cell *matHeaderCellDef>Gewicht (kg)</th>
-            <td mat-cell *matCellDef="let exercise">{{ exercise.weight }}</td>
+          <ng-container matColumnDef="address">
+            <th mat-header-cell *matHeaderCellDef>Adresse</th>
+            <td mat-cell *matCellDef="let gym">{{ formatAddress(gym) }}</td>
           </ng-container>
 
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let exercise">
-              <span *appIsInRoles="[roles.Update]">
+            <td mat-cell *matCellDef="let gym">
+              <span *appIsInRoles="[roles.Admin]">
                 <button mat-icon-button
-                        [routerLink]="['/exercise', exercise.id]"
-                        aria-label="Übung bearbeiten">
+                        [routerLink]="['/gym', gym.id]"
+                        aria-label="Gym bearbeiten">
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button mat-icon-button
-                        (click)="deleteExercise(exercise)"
-                        aria-label="Übung löschen">
+                        (click)="deleteGym(gym)"
+                        aria-label="Gym löschen">
                   <mat-icon>delete</mat-icon>
                 </button>
               </span>
@@ -74,9 +74,9 @@
         Neu laden
       </button>
 
-      <button mat-flat-button routerLink="/exercise/new" *appIsInRoles="[roles.Update]">
+      <button mat-flat-button routerLink="/gym/new" *appIsInRoles="[roles.Admin]">
         <mat-icon>add</mat-icon>
-        Neue Übung
+        Neues Gym
       </button>
     </mat-card-actions>
 
