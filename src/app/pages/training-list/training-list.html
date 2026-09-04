@@ -1,0 +1,95 @@
+<main class="wrapper">
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Trainings</mat-card-title>
+    </mat-card-header>
+
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <mat-card-content>
+
+      @if (error()) {
+
+        <p class="error">
+          <mat-icon color="warn">error_outline</mat-icon>
+          {{ error() }}
+        </p>
+
+      } @else if (trainings().length === 0 && !loading()) {
+
+        <p>Noch keine Trainings erfasst.</p>
+
+      } @else {
+
+        <table mat-table [dataSource]="trainings()">
+
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let training">{{ training.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let training">{{ training.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="day">
+            <th mat-header-cell *matHeaderCellDef>Wochentag</th>
+            <td mat-cell *matCellDef="let training">{{ dayLabel(training) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="gym">
+            <th mat-header-cell *matHeaderCellDef>Gym</th>
+            <td mat-cell *matCellDef="let training">{{ gymName(training) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="exercises">
+            <th mat-header-cell *matHeaderCellDef>Übungen</th>
+            <td mat-cell *matCellDef="let training">{{ exerciseCount(training) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let training">
+              <span *appIsInRoles="[roles.Update]">
+                <button mat-icon-button
+                        [routerLink]="['/training', training.id]"
+                        aria-label="Training bearbeiten">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button
+                        (click)="deleteTraining(training)"
+                        aria-label="Training löschen">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        </table>
+
+      }
+
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-button (click)="load()" [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+        Neu laden
+      </button>
+
+      <button mat-flat-button routerLink="/training/new" *appIsInRoles="[roles.Update]">
+        <mat-icon>add</mat-icon>
+        Neues Training
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+
+</main>

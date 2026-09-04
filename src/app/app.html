@@ -14,6 +14,13 @@
     <span>Gyms</span>
   </button>
 
+  <button mat-button
+    [routerLink]="['training']"
+    *appIsInRoles="[roles.Read]">
+    <mat-icon>calendar_month</mat-icon>
+    <span>Trainings</span>
+  </button>
+
   <span class="spacer"></span>
 
   <app-login></app-login>

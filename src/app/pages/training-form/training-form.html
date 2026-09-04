@@ -1,0 +1,83 @@
+<main class="wrapper">
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ title() }}</mat-card-title>
+    </mat-card-header>
+
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <mat-card-content>
+
+      @if (error()) {
+        <p class="error">
+          <mat-icon color="warn">error_outline</mat-icon>
+          {{ error() }}
+        </p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="fields">
+
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" maxlength="255" placeholder="z.B. Push Day">
+
+          @if (form.controls.name.hasError('required')) {
+            <mat-error>Name ist ein Pflichtfeld.</mat-error>
+          } @else if (form.controls.name.hasError('maxlength')) {
+            <mat-error>Der Name darf höchstens 255 Zeichen lang sein.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Wochentag</mat-label>
+          <mat-select formControlName="day">
+            @for (day of days; track day[0]) {
+              <mat-option [value]="day[0]">{{ day[1] }}</mat-option>
+            }
+          </mat-select>
+
+          @if (form.controls.day.hasError('required')) {
+            <mat-error>Wochentag ist ein Pflichtfeld.</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Gym</mat-label>
+          <mat-select formControlName="gymId">
+            <mat-option [value]="null">Kein Gym</mat-option>
+            @for (gym of gyms(); track gym.id) {
+              <mat-option [value]="gym.id">{{ gym.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Übungen</mat-label>
+          <mat-select formControlName="exerciseIds" multiple>
+            @for (exercise of exercises(); track exercise.id) {
+              <mat-option [value]="exercise.id">{{ exercise.name }} ({{ exercise.weight }} kg)</mat-option>
+            }
+          </mat-select>
+          <mat-hint>Mehrfachauswahl möglich</mat-hint>
+        </mat-form-field>
+
+      </form>
+
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button mat-button type="button" (click)="cancel()" [disabled]="saving()">
+        Abbrechen
+      </button>
+      <button mat-flat-button type="button" (click)="save()" [disabled]="saving() || loading()">
+        <mat-icon>save</mat-icon>
+        Speichern
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+
+</main>
